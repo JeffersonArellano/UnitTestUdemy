@@ -2,10 +2,6 @@
 {
     using NUnit.Framework;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using TestNinja.Fundamentals;
 
     [TestFixture]
@@ -17,18 +13,19 @@
         public void CalculateDemeritPoints_SpeedIsOutOfRange_ThrowArgumentOutOfRangeException(int speed)
         { 
             var calculator = new DemeritPointsCalculator(); 
+
             Assert.That(()=>calculator.CalculateDemeritPoints(speed) , Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
-        [TestCase(60)]
-        public void CalculateDemeritPoints_SpeedLessEqualThatSpeedLimit_ReturnZero(int speed)
+        [TestCase(60, 0)]
+        public void CalculateDemeritPoints_SpeedLessEqualThatSpeedLimit_ReturnZero(int speed,  int expectedResult)
         {
             var demeritPoints = new DemeritPointsCalculator();
 
             var result = demeritPoints.CalculateDemeritPoints(speed);
 
-            Assert.That(result,Is.EqualTo(0));
+            Assert.That(result,Is.EqualTo(expectedResult));
         }
 
         [Test]
