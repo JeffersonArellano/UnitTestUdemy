@@ -12,45 +12,62 @@ namespace TestNinja.UnitTest.Mocking
     [TestFixture]
     public class VideoServiceTests
     {
+        private VideoService videoService;
         private Mock<IFileReader> fileReader;
-        private VideoService service;
+        private Mock<IVideoRepository> repository;
 
         [SetUp]
         public void Setup()
         {
             fileReader = new Mock<IFileReader>();
-            service = new VideoService(fileReader.Object);
+            repository = new Mock<IVideoRepository>();
+            videoService = new VideoService(fileReader.Object, repository.Object);
         }
+
+        //[Test]
+        //public void ReadVideoTitle_EmptyFile_ReturnError()
+        //{
+        //    //Arrange
+        //    fileReader.Setup(fr => fr.Read("Video.txt")).Returns("");
+
+        //    //Act
+        //    var result = videoService.ReadVideoTitle();
+
+        //    //Assert
+        //    Assert.That(result, Does.Contain("error").IgnoreCase);
+        //}
 
 
         [Test]
-        public void ReadVideoTitle_EmptyFile_ReturnError()
+        public void GetUnprocessedVideosAsCsv_AllVideosAreProcessed_ReturnEmptyString()
         {
-            //Arrange
-            fileReader.Setup(fr => fr.Read("Video.txt")).Returns("");
+            //Arrange 
+            repository.Setup(r => r.GetUnprocessVideos()).Returns(new List<Video>());
 
             //Act
-            var result = service.ReadVideoTitle();
+            var result = videoService.GetUnprocessedVideosAsCsv();
 
-            //Assert
-            Assert.That(result, Does.Contain("error").IgnoreCase);
+            //Assert         
+            Assert.That(result, Is.EqualTo(""));
         }
 
+        [Test]
+        public void GetUnprocessedVideosAsCsv_AFewUnProcessVideos_ReturnStringWithIdOfUnproccessVideos()
+        {
+            //Arrange 
+            repository.Setup(r => r.GetUnprocessVideos()).Returns(new List<Video>
+            {
+                new  Video{ Id = 1  },
+                new  Video{ Id = 2  },
+                new  Video{ Id = 3  },
+            });
 
-        //[Test]
-        //public void ReadVideoTitle_IfVideoIsNull_RetunTitle()
-        //{
-        //    //Arrange
-        //    var video = new VideoService();
-        //    var fakeFileReader = new FakeFileReader();
-        //    fakeFileReader.Read("Some Movie");
+            //Act
+            var result = videoService.GetUnprocessedVideosAsCsv();
 
-        //    //Act
-        //    var result = video.ReadVideoTitle(fakeFileReader);
-
-        //    //Assert
-        //    Assert.That(result, Is.EqualTo(""));
-        //}
+            //Assert         
+            Assert.That(result, Is.EqualTo("1,2,3"));
+        }
 
     }
 }
